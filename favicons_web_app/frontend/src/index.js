@@ -8,6 +8,7 @@ import App from './App';
 import Home from './components/Home';
 import Converter from './components/Converter';
 import Generator from './components/Generator';
+import Logos from './components/Logos';
 
 const root = createRoot(document.getElementById('root'));
 
@@ -32,7 +33,7 @@ const router = createBrowserRouter([
       },
       {
         path:"/logos/",
-        element: <p className='text-green-600 bg-black p-15'>This is a logos tag</p>
+        element: <Logos/>
       },
       {
         path:"/emojis/",

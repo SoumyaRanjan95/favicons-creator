@@ -1,1 +1,6 @@
 node_modules/
+Favicon.egg-info/
+__pycache__/
+tmp/
+db.sqlite3
+staticfolder/

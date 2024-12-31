@@ -1,32 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
 function Converter(){
-
-
-    function dragOverHandler(e){
-        console.log("Files in the drop zone...")
-        e.preventDefault();
-    }
-
-    function handleDropEvent(e){
-        e.preventDefault();
-        console.log("Files dropped")
-
-        if(e.dataTransfer.items){
-            [...e.dataTransfer.items].forEach((item,i) => {
-                if(item.kind === 'file'){
-                    const file = item.getAsFile();
-                    console.log(`… file[${i}].name = ${file.name}`);
-
-                }
-            })
-        }else{
-            [...e.dataTransfer.files].forEach((file,i) =>{
-                console.log(`… file[${i}].name = ${file.name}`);
-
-            })
-        }
-
-    }
 
 
     async function showFilePicker() {
@@ -44,9 +17,27 @@ function Converter(){
             multiple: false,
         };
         [fileHandle] = await window.showOpenFilePicker(pickerOptions);
-        console.log(fileHandle.name)
-    }
+        let fileData = await fileHandle.getFile();
 
+        let formData = new FormData();
+        formData.append("file",fileData)
+        fetch('http://localhost:8001/upload-file-convert-from-image/',{
+            method: "POST",
+            body : formData,
+
+        })
+        .then((res) => {
+            res.blob().then((blob) => {
+                const fileUrl = window.URL.createObjectURL(blob);
+                let linktag = document.createElement('a');
+                linktag.href = fileUrl;
+                linktag.download = "favicons.zip";
+                linktag.click();
+                linktag.remove();
+            })
+        })
+        .catch(err => console.log(err))
+    }
 
     const templatestring = [
         `<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">`,
@@ -63,17 +54,16 @@ function Converter(){
         <>
             <div className="p-6 bg-black flex flex-col lg:flex lg:flex-col">
                 <p className="p-3 text-left text-white text-base font-bold">A Favicons Converter Tool</p>
-                <h4 className="max-w-2xl p-3 text-left text-white text-xl font-bold">Want to quickly convert favicons from an image? Just upload the image here in the drag and
-                drop feature and the tool will convert every thing for you.    
+                <h4 className="max-w-2xl p-3 text-left text-white text-xl font-bold">Want to quickly convert favicons from an image? Just upload the image here and the tool will convert every thing for you.    
                 </h4>
             </div>
             <div className="p-6 bg-white flex flex-col lg:flex lg:flex-col lg:justify-center">
 
                 <div className="m-5 p-3 flex flex-col lg:flex lg:flex-col border border-ouline rounded-md shadow-md">
                     <p className="p-3 text-2xl font-bold">Converter</p>
+                    <p className="px-3 text-normal font-bold">Click to Upload</p>
                     <div className="p-3 text-left text-base font-normal">
-                        <div onClick={showFilePicker} onDrop={handleDropEvent} onDragOver={dragOverHandler} className="border-2 p-10 text-center rounded-md">Drag and drop your file here or click to upload</div>
-                        <button className="border-2 p-3 bg-sky-600 text-white font-bold text-base flex flex-row justify-center rounded-md"><i className="material-icons text-center px-1">download</i>Download</button>
+                        <div onClick={showFilePicker} className="border-2 p-10 text-center rounded-md">Click To Upload</div>
                     </div>
 
                 </div>
